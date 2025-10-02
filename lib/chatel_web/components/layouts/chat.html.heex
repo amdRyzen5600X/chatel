@@ -1,0 +1,60 @@
+<div class="grid grid-cols-[20%_1fr] grid-rows-[auto_1fr_auto] h-[calc(100vh-2rem)] bg-white dark:bg-gray-800 shadow-lg">
+  <div class="row-span-3 overflow-y-auto p-4 border-r border-gray-200 dark:border-gray-700">
+    <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Available Chats</h2>
+    <ul class="divide-y border-y border-gray-200 dark:border-gray-700 divide-gray-200 dark:divide-gray-700">
+      <%= for user <- @users do %>
+        <.user chat={user} />
+      <% end %>
+
+      <%= for group_chat <- @group_chats do %>
+        <.group_chat chat={group_chat} />
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center space-x-4">
+    <%= if @current_chat do %>
+      <div>
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+          <%= case Map.fetch(@current_chat, :username) do %>
+            <% {:ok, username} -> %>
+              {username}
+            <% :error -> %>
+              {@current_chat.chat_name}
+          <% end %>
+        </h2>
+        <div class="flex items-center space-x-2">
+          <%= if @online_users do %>
+            <%= if @online_users && Map.has_key?(@online_users, Integer.to_string(@current_chat.id)) do %>
+              <svg width="10" height="10" class="">
+                <circle
+                  fill="green"
+                  r="5"
+                  cx="5"
+                  cy="5"
+                />
+              </svg>
+              <p class="text-sm text-green-500">Online</p>
+            <% else %>
+              <svg width="10" height="10" class="">
+                <circle
+                  fill="gray"
+                  r="5"
+                  cx="5"
+                  cy="5"
+                />
+              </svg>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Offline</p>
+            <% end %>
+          <% else %>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {length(@current_chat.users)}{" members"}
+            </p>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  {@inner_content}
+</div>

@@ -1,0 +1,24 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:bullseye
+    env_file: "./.env"
+    environment:
+      PGDATA: /var/lib/postgresql/elixir_data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - elixir_data:/var/lib/postgresql/elixir_data/pgdata
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+
+volumes:
+  elixir_data:
+
+
