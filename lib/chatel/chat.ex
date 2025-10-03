@@ -85,4 +85,15 @@ defmodule Chatel.Chat do
       end)
     {users, group_chats}
   end
+
+  def create_group_chat(display_name, chat_name, user_ids, owner_id) do
+    %Chatel.Conversation.GroupChat{}
+    |> Chatel.Conversation.GroupChat.changeset(%{
+      display_name: display_name,
+      chat_name: chat_name,
+      owner_id: owner_id,
+      user_ids: user_ids
+    })
+    |> Repo.insert()
+  end
 end

@@ -202,7 +202,7 @@ defmodule ChatelWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="mt-10 space-y-8 bg-white">
+      <div class="mt-10 space-y-8">
         {render_slot(@inner_block, f)}
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           {render_slot(action, f)}
@@ -267,7 +267,7 @@ defmodule ChatelWeb.CoreComponents do
       class={[
         @class
       ]}
-      navigate={"chat/#{@chat_name}"}
+      navigate={"/chat/#{@chat_name}"}
     >
       {render_slot(@inner_block)}
     </.link>
@@ -428,7 +428,7 @@ defmodule ChatelWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800 dark:text-white">
       {render_slot(@inner_block)}
     </label>
     """
@@ -673,7 +673,7 @@ defmodule ChatelWeb.CoreComponents do
 
     ~H"""
     <div class={@wrapper_class}>
-      <div class={"p-3 rounded-lg max-w-md #{@bubble_class}"}>
+      <div class={"p-3 rounded-lg max-w-md break-words #{@bubble_class}"}>
         <p class="text-sm text-white">{@message.text}</p>
       </div>
     </div>

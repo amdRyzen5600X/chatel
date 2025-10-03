@@ -36,6 +36,9 @@ defmodule ChatelWeb.GroupChatLive do
 
     socket =
       socket
+      |> assign(:show_modal, false)
+      |> assign(:chat_form, to_form(%{}))
+      |> assign(:parent, self())
       |> assign(:users, users)
       |> assign(:group_chats, group_chats)
       |> assign(:current_chat, current_chat)
@@ -96,6 +99,8 @@ defmodule ChatelWeb.GroupChatLive do
         if group_chat.id == group_chat_id do
           group_chat
           |> Map.put(:last_message, message)
+        else
+          group_chat
         end
       end)
 

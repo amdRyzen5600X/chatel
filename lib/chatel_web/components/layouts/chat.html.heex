@@ -1,15 +1,24 @@
-<div class="grid grid-cols-[20%_1fr] grid-rows-[auto_1fr_auto] h-[calc(100vh-2rem)] bg-white dark:bg-gray-800 shadow-lg">
-  <div class="row-span-3 overflow-y-auto p-4 border-r border-gray-200 dark:border-gray-700">
-    <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Available Chats</h2>
-    <ul class="divide-y border-y border-gray-200 dark:border-gray-700 divide-gray-200 dark:divide-gray-700">
-      <%= for user <- @users do %>
-        <.user chat={user} />
-      <% end %>
-
-      <%= for group_chat <- @group_chats do %>
-        <.group_chat chat={group_chat} />
-      <% end %>
-    </ul>
+<div
+  id="chat-layout"
+  class="grid grid-cols-[20%_1fr] grid-rows-[auto_1fr_auto] h-[calc(100vh-2rem)] bg-white dark:bg-gray-800 shadow-lg"
+>
+  <div class="row-span-3 flex flex-col p-4 border-r border-gray-200 dark:border-gray-700">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">Available Chats</h2>
+      <.live_component
+        module={ChatelWeb.CreateChatButton}
+        id="create-chat-button"
+        show_modal={@show_modal}
+      />
+    </div>
+    <div class="flex-grow min-h-0 overflow-y-auto">
+      <.live_component
+        module={ChatelWeb.ChatList}
+        id="chat-list"
+        users={@users}
+        group_chats={@group_chats}
+      />
+    </div>
   </div>
 
   <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center space-x-4">
@@ -57,4 +66,14 @@
   </div>
 
   {@inner_content}
+
+  <.live_component
+    module={ChatelWeb.CreateChatModal}
+    id="create-chat-modal"
+    show_modal={@show_modal}
+    chat_form={@chat_form}
+    all_users={@users}
+    current_user={@current_user}
+    parent={@parent}
+  />
 </div>

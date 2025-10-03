@@ -13,6 +13,11 @@ defmodule Chatel.Accounts do
     Repo.all(User)
   end
 
+  def list_users_by_ids(ids) do
+    Repo.all(User)
+    |> Enum.filter(fn user -> user.id in ids end)
+  end
+
   @doc """
   Gets a user by email.
 

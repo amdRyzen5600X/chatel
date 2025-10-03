@@ -39,6 +39,9 @@ defmodule ChatelWeb.UserChatLive do
 
     socket =
       socket
+      |> assign(:show_modal, false)
+      |> assign(:chat_form, to_form(%{}))
+      |> assign(:parent, self())
       |> assign(:online_users, ChatelWeb.Presence.list(@online_users_topic))
       |> assign(:users, users)
       |> assign(:group_chats, group_chats)
