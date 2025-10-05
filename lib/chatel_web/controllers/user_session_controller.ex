@@ -19,7 +19,6 @@ defmodule ChatelWeb.UserSessionController do
   end
 
   defp create(conn, %{"user" => %{"email" => login, "password" => password}} = user_params, info) do
-
     if user = Accounts.get_user_by_login_and_password(login, password) do
       conn
       |> put_flash(:info, info)
@@ -34,7 +33,6 @@ defmodule ChatelWeb.UserSessionController do
   end
 
   defp create(conn, %{"user" => %{"login" => login, "password" => password}} = user_params, info) do
-
     if user = Accounts.get_user_by_login_and_password(login, password) do
       conn
       |> put_flash(:info, info)

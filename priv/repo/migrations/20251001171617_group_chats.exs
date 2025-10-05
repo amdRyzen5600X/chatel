@@ -26,6 +26,5 @@ defmodule Chatel.Repo.Migrations.GroupChats do
 
       timestamps()
     end
-
   end
 end

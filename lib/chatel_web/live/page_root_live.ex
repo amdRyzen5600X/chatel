@@ -39,12 +39,15 @@ defmodule ChatelWeb.PageRootLive do
 
   def handle_info(:chat_created, socket) do
     {users, group_chats} = Chatel.Chat.list_all_chats(socket.assigns.current_user.id)
+
     socket =
       socket
       |> assign(:users, users)
       |> assign(:group_chats, group_chats)
+
     {:noreply, socket}
   end
+
   def handle_info(_msg, socket) do
     {:noreply, socket}
   end

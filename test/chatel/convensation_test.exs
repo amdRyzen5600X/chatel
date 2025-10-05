@@ -21,7 +21,11 @@ defmodule Chatel.ConversationTest do
     end
 
     test "create_message/1 with valid data creates a message" do
-      valid_attrs = %{text: "some text", created_at: ~U[2025-09-25 18:17:00Z], updated_at: ~U[2025-09-25 18:17:00Z]}
+      valid_attrs = %{
+        text: "some text",
+        created_at: ~U[2025-09-25 18:17:00Z],
+        updated_at: ~U[2025-09-25 18:17:00Z]
+      }
 
       assert {:ok, %Message{} = message} = Conversation.create_message(valid_attrs)
       assert message.text == "some text"
@@ -35,7 +39,12 @@ defmodule Chatel.ConversationTest do
 
     test "update_message/2 with valid data updates the message" do
       message = message_fixture()
-      update_attrs = %{text: "some updated text", created_at: ~U[2025-09-26 18:17:00Z], updated_at: ~U[2025-09-26 18:17:00Z]}
+
+      update_attrs = %{
+        text: "some updated text",
+        created_at: ~U[2025-09-26 18:17:00Z],
+        updated_at: ~U[2025-09-26 18:17:00Z]
+      }
 
       assert {:ok, %Message{} = message} = Conversation.update_message(message, update_attrs)
       assert message.text == "some updated text"

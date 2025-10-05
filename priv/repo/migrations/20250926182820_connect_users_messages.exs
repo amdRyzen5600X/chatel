@@ -10,6 +10,5 @@ defmodule Chatel.Repo.Migrations.ConnectUsersMessages do
       add :text, :text
       add :sender_id, references(:users, on_delete: :delete_all), null: false
     end
-
   end
 end

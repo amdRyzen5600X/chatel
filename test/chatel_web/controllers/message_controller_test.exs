@@ -3,8 +3,16 @@ defmodule ChatelWeb.MessageControllerTest do
 
   import Chatel.ConversationFixtures
 
-  @create_attrs %{text: "some text", created_at: ~U[2025-09-25 18:17:00Z], updated_at: ~U[2025-09-25 18:17:00Z]}
-  @update_attrs %{text: "some updated text", created_at: ~U[2025-09-26 18:17:00Z], updated_at: ~U[2025-09-26 18:17:00Z]}
+  @create_attrs %{
+    text: "some text",
+    created_at: ~U[2025-09-25 18:17:00Z],
+    updated_at: ~U[2025-09-25 18:17:00Z]
+  }
+  @update_attrs %{
+    text: "some updated text",
+    created_at: ~U[2025-09-26 18:17:00Z],
+    updated_at: ~U[2025-09-26 18:17:00Z]
+  }
   @invalid_attrs %{text: nil, created_at: nil, updated_at: nil}
 
   describe "index" do

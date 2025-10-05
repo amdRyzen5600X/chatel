@@ -660,30 +660,6 @@ defmodule ChatelWeb.CoreComponents do
     """
   end
 
-  def message(assigns) do
-    is_current_user? = assigns.current_user.id == assigns.message.sender_user_id
-
-    wrapper_class =
-      if is_current_user?, do: "flex justify-end", else: "flex justify-start"
-
-    bubble_class =
-      if is_current_user?, do: "bg-gray-100 dark:bg-blue-500", else: "bg-white dark:bg-gray-900"
-
-    assigns = assign(assigns, wrapper_class: wrapper_class, bubble_class: bubble_class)
-    assigns = assign(assigns, is_current_user?: is_current_user?)
-
-    ~H"""
-    <div class={@wrapper_class}>
-      <div class={"p-3 rounded-lg max-w-md #{@bubble_class}"}>
-        <%= if @group_chat? && !@is_current_user?do %>
-        <p class="text-m text-white">{@message.sender_user.username}</p>
-        <% end %>
-        <p class="text-xs break-words text-white">{@message.text}</p>
-      </div>
-    </div>
-    """
-  end
-
   def message_input(assigns) do
     ~H"""
     <div class="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">

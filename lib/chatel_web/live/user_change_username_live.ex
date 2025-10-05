@@ -7,6 +7,7 @@ defmodule ChatelWeb.UserChangeUsernameLive do
     IO.inspect(socket)
     IO.puts("-----------------------------")
     IO.inspect(_session)
+
     socket =
       case Accounts.update_user_username(socket.assigns.current_user, token) do
         :ok ->

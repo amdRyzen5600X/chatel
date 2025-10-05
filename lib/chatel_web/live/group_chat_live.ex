@@ -10,7 +10,13 @@ defmodule ChatelWeb.GroupChatLive do
       <%= if @current_chat do %>
         <div class="flex flex-col space-y-4">
           <%= for message <- @messages do %>
-            <.message message={message} current_user={@current_user} group_chat?={@group_chat?} />
+            <.live_component
+              module={ChatelWeb.MessageComponent}
+              id={message.id}
+              message={message}
+              current_user={@current_user}
+              group_chat?={@group_chat?}
+            />
           <% end %>
         </div>
       <% end %>

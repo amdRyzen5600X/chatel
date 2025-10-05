@@ -10,7 +10,14 @@ defmodule ChatelWeb.UserChatLive do
       <%= if @current_chat do %>
         <div class="flex flex-col space-y-4">
           <%= for message <- @messages do %>
-            <.message message={message} current_user={@current_user} group_chat?={@group_chat?}/>
+            <.live_component
+              module={ChatelWeb.MessageComponent}
+              id={message.id}
+              message={message}
+              current_user={@current_user}
+              group_chat?={@group_chat?}
+              show_modal={@modal_states[message.id]}
+            />
           <% end %>
         </div>
       <% end %>
@@ -51,6 +58,7 @@ defmodule ChatelWeb.UserChatLive do
       |> assign(:message_text, "")
       |> assign(:other_topic, @other_chat_topic)
       |> assign(:message_form, %{"message" => ""})
+      |> assign(:modal_states, %{})
 
     socket =
       if not is_nil(current_chat) and not is_nil(current_user) do
@@ -96,6 +104,16 @@ defmodule ChatelWeb.UserChatLive do
 
   def handle_event("update_text", %{"message" => message}, socket) do
     {:noreply, assign(socket, :message_text, message)}
+  end
+
+  def handle_info({:show_modal, message_id}, socket) do
+    {:noreply,
+     assign(socket, :modal_states, Map.put(socket.assigns.modal_states, message_id, true))}
+  end
+
+  def handle_info({:hide_modal, message_id}, socket) do
+    {:noreply,
+     assign(socket, :modal_states, Map.put(socket.assigns.modal_states, message_id, false))}
   end
 
   def handle_info(

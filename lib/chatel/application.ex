@@ -12,8 +12,8 @@ defmodule Chatel.Application do
         strategy: Cluster.Strategy.Epmd,
         config: [
           hosts: [
-            :"node1@AMDRYZENSARCH",
-            :"node2@AMDRYZENSARCH",
+            :node1@AMDRYZENSARCH,
+            :node2@AMDRYZENSARCH
           ]
         ]
       ]
