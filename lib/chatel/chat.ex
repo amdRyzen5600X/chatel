@@ -5,13 +5,9 @@ defmodule Chatel.Chat do
   alias Chatel.Repo
 
   def list_group_messages(group_chat_id) do
-    query =
-      from m in ChatMessage,
-        where: m.group_chat_id == ^group_chat_id,
-        order_by: [asc: m.inserted_at],
-        select: m
-
-    Repo.all(query)
+    Repo.all(ChatMessage)
+    |> Repo.preload(:sender_user)
+    |> Enum.filter(fn msg -> msg.group_chat_id == group_chat_id end)
   end
 
   def list_messages(user1_id, user2_id) do
@@ -83,6 +79,7 @@ defmodule Chatel.Chat do
       |> Enum.map(fn group_chat ->
         %{group_chat | last_message: Chatel.Chat.last_group_message(group_chat.id)}
       end)
+
     {users, group_chats}
   end
 

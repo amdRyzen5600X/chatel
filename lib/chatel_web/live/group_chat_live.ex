@@ -10,7 +10,7 @@ defmodule ChatelWeb.GroupChatLive do
       <%= if @current_chat do %>
         <div class="flex flex-col space-y-4">
           <%= for message <- @messages do %>
-            <.message message={message} current_user={@current_user} />
+            <.message message={message} current_user={@current_user} group_chat?={@group_chat?} />
           <% end %>
         </div>
       <% end %>
@@ -37,6 +37,7 @@ defmodule ChatelWeb.GroupChatLive do
     socket =
       socket
       |> assign(:show_modal, false)
+      |> assign(:group_chat?, true)
       |> assign(:chat_form, to_form(%{}))
       |> assign(:parent, self())
       |> assign(:users, users)

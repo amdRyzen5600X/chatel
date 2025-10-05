@@ -670,11 +670,15 @@ defmodule ChatelWeb.CoreComponents do
       if is_current_user?, do: "bg-gray-100 dark:bg-blue-500", else: "bg-white dark:bg-gray-900"
 
     assigns = assign(assigns, wrapper_class: wrapper_class, bubble_class: bubble_class)
+    assigns = assign(assigns, is_current_user?: is_current_user?)
 
     ~H"""
     <div class={@wrapper_class}>
-      <div class={"p-3 rounded-lg max-w-md break-words #{@bubble_class}"}>
-        <p class="text-sm text-white">{@message.text}</p>
+      <div class={"p-3 rounded-lg max-w-md #{@bubble_class}"}>
+        <%= if @group_chat? && !@is_current_user?do %>
+        <p class="text-m text-white">{@message.sender_user.username}</p>
+        <% end %>
+        <p class="text-xs break-words text-white">{@message.text}</p>
       </div>
     </div>
     """
