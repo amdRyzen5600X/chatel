@@ -3,7 +3,6 @@ defmodule ChatelWeb.HelloController do
 
   def index(conn, %{"name" => name}) do
     IO.puts("HelloController.index")
-    IO.inspect(conn)
     render(conn, :index, name: name)
   end
 

@@ -4,10 +4,6 @@ defmodule ChatelWeb.UserChangeUsernameLive do
   alias Chatel.Accounts
 
   def mount(%{"token" => token}, _session, socket) do
-    IO.inspect(socket)
-    IO.puts("-----------------------------")
-    IO.inspect(_session)
-
     socket =
       case Accounts.update_user_username(socket.assigns.current_user, token) do
         :ok ->

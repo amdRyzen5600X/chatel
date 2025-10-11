@@ -94,6 +94,7 @@ defmodule Chatel.Chat do
       end)
 
     List.flatten([users | group_chats])
+    |> Enum.sort_by(& &1.last_message.inserted_at, :desc)
   end
 
   def create_group_chat(display_name, chat_name, user_ids, owner_id) do

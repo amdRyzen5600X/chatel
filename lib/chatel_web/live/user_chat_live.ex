@@ -63,18 +63,18 @@ defmodule ChatelWeb.UserChatLive do
       if not is_nil(current_chat) and not is_nil(current_user) do
         topic =
           if current_chat.is_group_chat do
-            build_topic(current_user, current_chat)
-          else
             "chat:#{current_chat.chat_name}"
+          else
+            build_topic(current_user, current_chat)
           end
 
         ChatelWeb.Endpoint.subscribe(topic)
 
         messages =
-          if !current_chat.is_group_chat do
-            Chatel.Chat.list_messages(current_user.id, current_chat.id)
-          else
+          if current_chat.is_group_chat do
             Chatel.Chat.list_group_messages(current_chat.id)
+          else
+            Chatel.Chat.list_messages(current_user.id, current_chat.id)
           end
 
         socket
@@ -118,15 +118,31 @@ defmodule ChatelWeb.UserChatLive do
   end
 
   def handle_event("send_message", %{"message" => message}, socket) do
-    %{current_user: sender, current_chat: recipient, topic: topic} = socket.assigns
+    %{
+      current_user: sender,
+      current_chat: current_chat,
+      topic: topic,
+      group_chat?: group_chat?
+    } = socket.assigns
 
-    with {:ok, message} <- Chatel.Chat.create_message(sender.id, recipient.id, message) do
-      ChatelWeb.Endpoint.broadcast(topic, "new_message", %{message: message})
-      ChatelWeb.Endpoint.broadcast(@other_chat_topic, "new_message", %{message: message})
+    if group_chat? do
+      with {:ok, message} <- Chatel.Chat.create_group_message(sender.id, current_chat.id, message) do
+        ChatelWeb.Endpoint.broadcast(topic, "new_message", %{message: message})
+        ChatelWeb.Endpoint.broadcast(@other_chat_topic, "new_message", %{message: message})
 
-      {:noreply,
-       socket
-       |> assign(:message_text, "")}
+        {:noreply,
+         socket
+         |> assign(:message_text, "")}
+      end
+    else
+      with {:ok, message} <- Chatel.Chat.create_message(sender.id, current_chat.id, message) do
+        ChatelWeb.Endpoint.broadcast(topic, "new_message", %{message: message})
+        ChatelWeb.Endpoint.broadcast(@other_chat_topic, "new_message", %{message: message})
+
+        {:noreply,
+         socket
+         |> assign(:message_text, "")}
+      end
     end
   end
 
@@ -148,23 +164,39 @@ defmodule ChatelWeb.UserChatLive do
         %{event: "new_message", payload: %{message: message}, topic: @other_chat_topic},
         socket
       ) do
-    recipient_id = message.recipient_user_id
+    {recipient_id, group_chat?} =
+      case Map.fetch(message, :recipient_user_id) do
+        {:ok, recipient_user_id} ->
+          {recipient_user_id, false}
+
+        :error ->
+          {message.group_chat_id, true}
+      end
+
     sender_id = message.sender_user_id
 
-    users =
-      socket.assigns.users
-      |> Enum.map(fn user ->
-        if user.id == recipient_id or user.id == sender_id do
-          user
-          |> Map.put(:last_message, message)
+    chats =
+      socket.assigns.chats
+      |> Enum.map(fn chat ->
+        if chat.id == recipient_id and chat.is_group_chat == group_chat? and chat.is_group_chat do
+          Map.put(chat, :last_message, message)
         else
-          user
+          if (chat.id == recipient_id or chat.id == sender_id) and
+               chat.is_group_chat == group_chat? and !chat.is_group_chat do
+            Map.put(chat, :last_message, message)
+          else
+            chat
+          end
         end
       end)
 
     {:noreply,
      socket
-     |> assign(:users, users)}
+     |> assign(
+       :chats,
+       chats
+       |> Enum.sort_by(& &1.last_message.inserted_at, :desc)
+     )}
   end
 
   def handle_info(%{event: "new_message", payload: %{message: message}, topic: _}, socket) do
@@ -174,7 +206,6 @@ defmodule ChatelWeb.UserChatLive do
   end
 
   def handle_info(%{event: "presence_diff", topic: @online_users_topic}, socket) do
-    IO.inspect(socket)
     {:noreply, assign(socket, :online_users, ChatelWeb.Presence.list(@online_users_topic))}
   end
 end
