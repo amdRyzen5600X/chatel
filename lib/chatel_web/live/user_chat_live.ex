@@ -1,4 +1,5 @@
 defmodule ChatelWeb.UserChatLive do
+  alias Chatel.Chat
   use ChatelWeb, :live_view_chat
 
   @other_chat_topic "chat:other"
@@ -15,8 +16,10 @@ defmodule ChatelWeb.UserChatLive do
               id={message.id}
               message={message}
               current_user={@current_user}
+              current_chat={@current_chat}
               group_chat?={@group_chat?}
               show_modal={@modal_states[message.id]}
+              parrent={self()}
             />
           <% end %>
         </div>
@@ -150,6 +153,12 @@ defmodule ChatelWeb.UserChatLive do
     {:noreply, assign(socket, :message_text, message)}
   end
 
+  def handle_info({:message_deleted, message_id, group_chat?}, socket) do
+    ChatelWeb.Endpoint.broadcast(@other_chat_topic, "message_deleted", {message_id, group_chat?})
+
+    {:noreply, socket}
+  end
+
   def handle_info({:show_modal, message_id}, socket) do
     {:noreply,
      assign(socket, :modal_states, Map.put(socket.assigns.modal_states, message_id, true))}
@@ -158,6 +167,44 @@ defmodule ChatelWeb.UserChatLive do
   def handle_info({:hide_modal, message_id}, socket) do
     {:noreply,
      assign(socket, :modal_states, Map.put(socket.assigns.modal_states, message_id, false))}
+  end
+
+  def handle_info(
+        %{event: "message_deleted", payload: {message_id, group_chat?}, topic: @other_chat_topic},
+        socket
+      ) do
+    chats =
+      socket.assigns.chats
+      |> Enum.map(fn chat ->
+        if chat.last_message.id == message_id and chat.is_group_chat == group_chat? do
+          if group_chat? do
+            Map.put(chat, :last_message, Chat.last_group_message(chat.id))
+          else
+            Map.put(
+              chat,
+              :last_message,
+              Chat.last_message(chat.id, socket.assigns.current_user.id)
+            )
+          end
+        else
+          chat
+        end
+      end)
+      |> Enum.sort_by(& &1.last_message.inserted_at, :desc)
+
+    messages =
+      socket.assigns.messages
+      |> Enum.filter(fn msg ->
+        !(socket.assigns.group_chat? == group_chat? and
+            msg.id == message_id)
+      end)
+
+    socket =
+      socket
+      |> assign(:chats, chats)
+      |> assign(:messages, messages)
+
+    {:noreply, socket}
   end
 
   def handle_info(

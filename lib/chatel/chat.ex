@@ -76,7 +76,8 @@ defmodule Chatel.Chat do
           chat_name: user.username,
           last_message: Chatel.Chat.last_message(user.id, current_user_id),
           is_group_chat: false,
-          users: []
+          users: [],
+          owner_id: nil,
         }
       end)
 
@@ -89,7 +90,8 @@ defmodule Chatel.Chat do
           chat_name: group_chat.display_name,
           last_message: Chatel.Chat.last_group_message(group_chat.id),
           is_group_chat: true,
-          users: group_chat.users
+          users: group_chat.users,
+          owner_id: group_chat.owner_id,
         }
       end)
 
@@ -106,5 +108,14 @@ defmodule Chatel.Chat do
       user_ids: user_ids
     })
     |> Repo.insert()
+  end
+
+  def delete_message(message_id, group_chat?) do
+    if group_chat? do
+      %Chatel.Conversation.ChatMessage{id: message_id}
+    else
+      %Chatel.Conversation.Message{id: message_id}
+    end
+    |> Repo.delete()
   end
 end

@@ -1,4 +1,5 @@
 defmodule ChatelWeb.MessageComponent do
+  alias Chatel.Chat
   use ChatelWeb, :live_component
 
   def render(assigns) do
@@ -110,8 +111,45 @@ defmodule ChatelWeb.MessageComponent do
     {:noreply, socket}
   end
 
-  def handle_event("delete-message", %{"id" => _message_id}, socket) do
-    {:noreply, socket}
+  def handle_event("delete-message", %{"id" => message_id}, socket) do
+    current_user = socket.assigns.current_user
+    group_chat? = socket.assigns.group_chat?
+
+    chat_owner? =
+      if group_chat? do
+        socket.assigns.current_chat.owner_id == current_user.id
+      else
+        true
+      end
+
+    case Integer.parse(message_id) do
+      {message_id, _} ->
+        result =
+          if current_user.is_admin or chat_owner? do
+            Chat.delete_message(message_id, group_chat?)
+          else
+            {:error, "forbiden"}
+          end
+
+        case result do
+          {:ok, _} ->
+            send(socket.assigns.parrent, {:message_deleted, message_id, group_chat?})
+
+            {:noreply,
+             socket
+             |> put_flash(:ok, "message deleted")}
+
+          {:error, _} ->
+            {:noreply,
+             socket
+             |> put_flash(:eror, "cannot delete message")}
+        end
+
+      :error ->
+        {:noreply,
+         socket
+         |> put_flash(:eror, "invalid message id")}
+    end
   end
 
   def handle_event("pin-message", %{"id" => _message_id}, socket) do
