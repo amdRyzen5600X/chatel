@@ -18,15 +18,14 @@ defmodule ChatelWeb.PageRootLive do
     Presence.track(self(), @online_users_topic, current_user.id, %{id: current_user.id})
     Phoenix.PubSub.subscribe(Chatel.PubSub, @online_users_topic)
 
-    {users, group_chats} = Chatel.Chat.list_all_chats(current_user.id)
+    chats = Chatel.Chat.list_all_chats(current_user.id)
 
     socket =
       socket
       |> assign(:show_modal, false)
       |> assign(:chat_form, to_form(%{}))
       |> assign(:online_users, ChatelWeb.Presence.list(@online_users_topic))
-      |> assign(:users, users)
-      |> assign(:group_chats, group_chats)
+      |> assign(:chats, chats)
       |> assign(:current_chat, nil)
       |> assign(:current_user, current_user)
       |> assign(:message_form, %{"message" => ""})

@@ -602,16 +602,16 @@ defmodule ChatelWeb.CoreComponents do
     """
   end
 
-  def user(assigns) do
+  def chat(assigns) do
     ~H"""
     <li class="p-3 sm:py-4">
       <.user_chat_button
         class="flex items-center space-x-4 p-2 -mx-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-150 ease-in-out cursor-pointer"
-        username={@chat.username}
+        username={@chat.chat_name}
       >
         <div class="flex-1 min-w-0">
           <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-            {@chat.username}
+            {@chat.display_name}
           </p>
           <p class="text-sm text-gray-500 truncate dark:text-gray-400">
             <%= if @chat.last_message do %>

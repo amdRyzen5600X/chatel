@@ -15,8 +15,7 @@
       <.live_component
         module={ChatelWeb.ChatList}
         id="chat-list"
-        users={@users}
-        group_chats={@group_chats}
+        chats={@chats}
       />
     </div>
   </div>
@@ -25,35 +24,37 @@
     <%= if @current_chat do %>
       <div>
         <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-          <%= case Map.fetch(@current_chat, :username) do %>
-            <% {:ok, username} -> %>
-              {username}
+          <%= case Map.fetch(@current_chat, :chat_name) do %>
+            <% {:ok, chat_name} -> %>
+              {chat_name}
             <% :error -> %>
               {@current_chat.chat_name}
           <% end %>
         </h2>
         <div class="flex items-center space-x-2">
-          <%= if @online_users do %>
-            <%= if @online_users && Map.has_key?(@online_users, Integer.to_string(@current_chat.id)) do %>
-              <svg width="10" height="10" class="">
-                <circle
-                  fill="green"
-                  r="5"
-                  cx="5"
-                  cy="5"
-                />
-              </svg>
-              <p class="text-sm text-green-500">Online</p>
-            <% else %>
-              <svg width="10" height="10" class="">
-                <circle
-                  fill="gray"
-                  r="5"
-                  cx="5"
-                  cy="5"
-                />
-              </svg>
-              <p class="text-sm text-gray-500 dark:text-gray-400">Offline</p>
+          <%= if !@group_chat? do %>
+            <%= if @online_users do %>
+              <%= if @online_users && Map.has_key?(@online_users, Integer.to_string(@current_chat.id)) do %>
+                <svg width="10" height="10" class="">
+                  <circle
+                    fill="green"
+                    r="5"
+                    cx="5"
+                    cy="5"
+                  />
+                </svg>
+                <p class="text-sm text-green-500">Online</p>
+              <% else %>
+                <svg width="10" height="10" class="">
+                  <circle
+                    fill="gray"
+                    r="5"
+                    cx="5"
+                    cy="5"
+                  />
+                </svg>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Offline</p>
+              <% end %>
             <% end %>
           <% else %>
             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -72,7 +73,7 @@
     id="create-chat-modal"
     show_modal={@show_modal}
     chat_form={@chat_form}
-    all_users={@users}
+    chats={@chats}
     current_user={@current_user}
     parent={@parent}
   />

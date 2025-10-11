@@ -38,21 +38,20 @@ defmodule ChatelWeb.UserChatLive do
     ChatelWeb.Presence.track(self(), @online_users_topic, current_user.id, %{id: current_user.id})
     Phoenix.PubSub.subscribe(Chatel.PubSub, @online_users_topic)
 
-    {users, group_chats} = Chatel.Chat.list_all_chats(current_user.id)
+    chats = Chatel.Chat.list_all_chats(current_user.id)
 
     current_chat =
-      users
-      |> Enum.find(fn user -> user.username == username end)
+      chats
+      |> Enum.find(fn chat -> chat.chat_name == username end)
 
     socket =
       socket
-      |> assign(:group_chat?, false)
+      |> assign(:group_chat?, current_chat.is_group_chat)
       |> assign(:show_modal, false)
       |> assign(:chat_form, to_form(%{}))
       |> assign(:parent, self())
       |> assign(:online_users, ChatelWeb.Presence.list(@online_users_topic))
-      |> assign(:users, users)
-      |> assign(:group_chats, group_chats)
+      |> assign(:chats, chats)
       |> assign(:current_chat, current_chat)
       |> assign(:current_user, current_user)
       |> assign(:message_text, "")
@@ -62,10 +61,21 @@ defmodule ChatelWeb.UserChatLive do
 
     socket =
       if not is_nil(current_chat) and not is_nil(current_user) do
-        topic = build_topic(current_user, current_chat)
+        topic =
+          if current_chat.is_group_chat do
+            build_topic(current_user, current_chat)
+          else
+            "chat:#{current_chat.chat_name}"
+          end
+
         ChatelWeb.Endpoint.subscribe(topic)
 
-        messages = Chatel.Chat.list_messages(current_user.id, current_chat.id)
+        messages =
+          if !current_chat.is_group_chat do
+            Chatel.Chat.list_messages(current_user.id, current_chat.id)
+          else
+            Chatel.Chat.list_group_messages(current_chat.id)
+          end
 
         socket
         |> assign(:messages, messages)
@@ -79,7 +89,25 @@ defmodule ChatelWeb.UserChatLive do
   end
 
   defp build_topic(user1, user2) do
-    [user1.username, user2.username]
+    user1name =
+      case Map.fetch(user1, :username) do
+        {:ok, username} ->
+          username
+
+        :error ->
+          user1.chat_name
+      end
+
+    user2name =
+      case Map.fetch(user2, :username) do
+        {:ok, username} ->
+          username
+
+        :error ->
+          user2.chat_name
+      end
+
+    [user1name, user2name]
     |> Enum.sort()
     |> Enum.join(":")
     |> then(&"chat:#{&1}")

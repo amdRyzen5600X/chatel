@@ -31,7 +31,7 @@ defmodule ChatelWeb.CreateChatModal do
                   Add Users
                 </label>
                 <div class="mt-2 max-h-48 overflow-y-auto rounded-md border border-gray-300 dark:border-gray-600 p-2 space-y-2">
-                  <%= for user <- @all_users do %>
+                  <%= for user <- @chats do %>
                     <label class="flex items-center space-x-3 p-1 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800">
                       <input
                         type="checkbox"

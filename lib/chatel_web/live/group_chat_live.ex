@@ -34,10 +34,10 @@ defmodule ChatelWeb.GroupChatLive do
     ChatelWeb.Endpoint.subscribe(@other_chat_topic)
     current_user = socket.assigns.current_user
 
-    {users, group_chats} = Chatel.Chat.list_all_chats(current_user.id)
+    chats = Chatel.Chat.list_all_chats(current_user.id)
 
     current_chat =
-      group_chats
+      chats
       |> Enum.find(fn group_chat -> group_chat.chat_name == chatname end)
 
     socket =
@@ -46,8 +46,7 @@ defmodule ChatelWeb.GroupChatLive do
       |> assign(:group_chat?, true)
       |> assign(:chat_form, to_form(%{}))
       |> assign(:parent, self())
-      |> assign(:users, users)
-      |> assign(:group_chats, group_chats)
+      |> assign(:chats, chats)
       |> assign(:current_chat, current_chat)
       |> assign(:current_user, current_user)
       |> assign(:online_users, nil)

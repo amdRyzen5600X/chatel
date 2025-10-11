@@ -11,15 +11,14 @@ defmodule Chatel.Chat do
   end
 
   def list_messages(user1_id, user2_id) do
-    query =
-      from m in Message,
-        where:
-          (m.sender_user_id == ^user1_id and m.recipient_user_id == ^user2_id) or
-            (m.sender_user_id == ^user2_id and m.recipient_user_id == ^user1_id),
-        order_by: [asc: m.inserted_at],
-        select: m
-
-    Repo.all(query)
+    Repo.all(Message)
+    |> Repo.preload(:sender_user)
+    |> Enum.filter(fn msg ->
+      msg.sender_user_id == user1_id || msg.recipient_user_id == user1_id
+    end)
+    |> Enum.filter(fn msg ->
+      msg.sender_user_id == user2_id || msg.recipient_user_id == user2_id
+    end)
   end
 
   def last_group_message(group_chat_id) do
@@ -71,16 +70,30 @@ defmodule Chatel.Chat do
       Chatel.Accounts.list_users()
       |> Enum.filter(fn user -> user.id != current_user_id end)
       |> Enum.map(fn user ->
-        %{user | last_message: Chatel.Chat.last_message(user.id, current_user_id)}
+        %{
+          id: user.id,
+          display_name: user.username,
+          chat_name: user.username,
+          last_message: Chatel.Chat.last_message(user.id, current_user_id),
+          is_group_chat: false,
+          users: []
+        }
       end)
 
     group_chats =
       Chatel.Conversation.GroupChat.list_group_chats(current_user_id)
       |> Enum.map(fn group_chat ->
-        %{group_chat | last_message: Chatel.Chat.last_group_message(group_chat.id)}
+        %{
+          id: group_chat.id,
+          display_name: group_chat.display_name,
+          chat_name: group_chat.display_name,
+          last_message: Chatel.Chat.last_group_message(group_chat.id),
+          is_group_chat: true,
+          users: group_chat.users
+        }
       end)
 
-    {users, group_chats}
+    List.flatten([users | group_chats])
   end
 
   def create_group_chat(display_name, chat_name, user_ids, owner_id) do

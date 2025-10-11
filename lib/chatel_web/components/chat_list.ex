@@ -8,12 +8,8 @@ defmodule ChatelWeb.ChatList do
       id="chat-list-component"
       class="divide-y border-y border-gray-200 dark:border-gray-700 divide-gray-200 dark:divide-gray-700"
     >
-      <%= for user <- @users do %>
-        <CoreComponents.user chat={user} />
-      <% end %>
-
-      <%= for group_chat <- @group_chats do %>
-        <CoreComponents.group_chat chat={group_chat} />
+      <%= for chat <- @chats do %>
+        <CoreComponents.chat chat={chat} />
       <% end %>
     </ul>
     """
