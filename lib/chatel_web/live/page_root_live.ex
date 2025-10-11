@@ -1,5 +1,4 @@
 defmodule ChatelWeb.PageRootLive do
-  alias ChatelWeb.CreateChatModal
   alias ChatelWeb.Presence
   use ChatelWeb, :live_view_chat
 

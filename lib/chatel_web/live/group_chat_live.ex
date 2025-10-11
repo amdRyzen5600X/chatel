@@ -1,5 +1,4 @@
 defmodule ChatelWeb.GroupChatLive do
-  alias Chatel.Conversation.GroupChat
   use ChatelWeb, :live_view_chat
 
   @other_chat_topic "chat:other"

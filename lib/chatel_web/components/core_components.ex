@@ -244,6 +244,7 @@ defmodule ChatelWeb.CoreComponents do
 
   attr :type, :string, default: nil
   attr :class, :string, default: nil
+  attr :username, :string, default: nil
   attr :rest, :global, include: ~w(disabled form name value)
 
   slot :inner_block, required: true
@@ -254,7 +255,7 @@ defmodule ChatelWeb.CoreComponents do
       class={[
         @class
       ]}
-      navigate={"/#{@rest.username}"}
+      navigate={"/#{@username}"}
     >
       {render_slot(@inner_block)}
     </.link>
