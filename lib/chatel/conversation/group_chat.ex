@@ -29,10 +29,24 @@ defmodule Chatel.Conversation.GroupChat do
 
     users = Repo.all(users)
 
-    group_chat
-    |> cast(attrs, [:display_name, :chat_name, :owner_id])
-    |> validate_required([:display_name, :chat_name, :owner_id])
-    |> put_assoc(:users, users)
+    user =
+      from u in User,
+        where: u.username == ^attrs[:username],
+        select: u
+
+    user = Repo.one(user)
+
+    changeset =
+      group_chat
+      |> cast(attrs, [:display_name, :chat_name, :owner_id])
+      |> validate_required([:display_name, :chat_name, :owner_id])
+      |> put_assoc(:users, users)
+
+    if user == nil do
+      changeset
+    else
+      %{changeset | action: :ignore}
+    end
   end
 
   def change_chat_name_changeset(group_chat, attrs) do
