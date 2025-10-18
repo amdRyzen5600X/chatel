@@ -94,8 +94,12 @@ defmodule Chatel.Chat do
         end
 
       last_message =
-        chat.last_message
-        |> Map.put(:text, Chatel.Vault.decrypt!(Chatel.Vault.decrypt!(chat.last_message.text)))
+        if is_nil(chat.last_message.text) do
+          chat.last_message
+        else
+          chat.last_message
+          |> Map.put(:text, Chatel.Vault.decrypt!(Chatel.Vault.decrypt!(chat.last_message.text)))
+        end
 
       %{
         chat_name: chat_name,
