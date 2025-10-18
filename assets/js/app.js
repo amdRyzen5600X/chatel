@@ -31,8 +31,21 @@ Hooks.ScrollToBottom = {
   mounted() {
     this.el.scrollTop = this.el.scrollHeight
   },
-  updated() {
-    this.el.scrollTop = this.el.scrollHeight
+}
+
+Hooks.InfiniteScroll = {
+  mounted() {
+    this.observer = new IntersectionObserver(entries => {
+      const trigger = entries[0];
+      if (trigger.isIntersecting) {
+        this.pushEvent("load_more", {});
+      }
+    });
+
+    this.observer.observe(this.el);
+  },
+  destroyed() {
+    this.observer.disconnect();
   }
 }
 

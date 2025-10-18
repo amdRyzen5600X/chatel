@@ -10,10 +10,9 @@ defmodule Chatel.Accounts.User do
     field :current_password, :string, virtual: true, redact: true
     field :is_admin, :boolean, default: false
     field :confirmed_at, :utc_datetime
-    has_many :sended_messages, Chatel.Conversation.Message, foreign_key: :sender_user_id
-    has_many :recieved_messages, Chatel.Conversation.Message, foreign_key: :recipient_user_id
 
-    field :last_message, :map, virtual: true
+    many_to_many :conversations, Chatel.Conversation.Conversation,
+      join_through: "conversation_participants"
 
     timestamps(type: :utc_datetime)
   end

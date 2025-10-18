@@ -8,7 +8,6 @@
       <.live_component
         module={ChatelWeb.CreateChatButton}
         id="create-chat-button"
-        show_modal={@show_modal}
       />
     </div>
     <div class="flex-grow min-h-0 overflow-y-auto">
@@ -32,7 +31,7 @@
           <% end %>
         </h2>
         <div class="flex items-center space-x-2">
-          <%= if !@group_chat? do %>
+          <%= if !@current_chat.group_chat? do %>
             <%= if @online_users do %>
               <%= if @online_users && Map.has_key?(@online_users, Integer.to_string(@current_chat.id)) do %>
                 <svg width="10" height="10" class="">
@@ -68,13 +67,25 @@
 
   {@inner_content}
 
-  <.live_component
-    module={ChatelWeb.CreateChatModal}
-    id="create-chat-modal"
-    show_modal={@show_modal}
-    chat_form={@chat_form}
-    chats={@chats}
-    current_user={@current_user}
-    parent={@parent}
-  />
+  <%= if @live_action == :new do %>
+    <.live_component
+      module={ChatelWeb.CreateChatModal}
+      id="create-chat-modal-component"
+      show_modal={true}
+      parent={@socket}
+      chats={@chats}
+      current_user={@current_user}
+      chat_form={@chat_form}
+    />
+  <% end %>
+
+  <%= if @live_action == :search do %>
+    <.live_component
+      module={ChatelWeb.UserSearchComponent}
+      current_user={@current_user}
+      query=""
+      results={[]}
+      id="user-search"
+    />
+  <% end %>
 </div>

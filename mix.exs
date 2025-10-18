@@ -59,7 +59,9 @@ defmodule Chatel.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
-      {:libcluster, "~> 3.5"}
+      {:libcluster, "~> 3.5"},
+      {:cloak, "~> 1.1.4"},
+      {:cloak_ecto, "~> 1.3.0"},
     ]
   end
 

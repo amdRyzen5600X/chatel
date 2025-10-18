@@ -1,11 +1,10 @@
 defmodule Chatel.Conversation.Message do
   use Ecto.Schema
-  import Ecto.Changeset
 
   schema "messages" do
-    field :text, :string
-    belongs_to :sender_user, Chatel.Accounts.User
-    belongs_to :recipient_user, Chatel.Accounts.User
+    field :text, Chatel.Encrypted.Binary
+    belongs_to :sender_user, Chatel.Accounts.User, foreign_key: :sender_id
+    belongs_to :conversation, Chatel.Conversation.Conversation
 
     timestamps(type: :utc_datetime)
   end
@@ -13,7 +12,7 @@ defmodule Chatel.Conversation.Message do
   @doc false
   def changeset(message, attrs) do
     message
-    |> cast(attrs, [:text, :sender_user_id, :recipient_user_id])
-    |> validate_required([:text, :sender_user_id, :recipient_user_id])
+    |> Ecto.Changeset.cast(attrs, [:text, :sender_id, :conversation_id])
+    |> Ecto.Changeset.validate_required([:text, :sender_id, :conversation_id])
   end
 end

@@ -244,7 +244,7 @@ defmodule ChatelWeb.CoreComponents do
 
   attr :type, :string, default: nil
   attr :class, :string, default: nil
-  attr :username, :string, default: nil
+  attr :conversation_id, :integer, default: nil
   attr :rest, :global, include: ~w(disabled form name value)
 
   slot :inner_block, required: true
@@ -255,7 +255,7 @@ defmodule ChatelWeb.CoreComponents do
       class={[
         @class
       ]}
-      navigate={"/#{@username}"}
+      navigate={"/#{@conversation_id}"}
     >
       {render_slot(@inner_block)}
     </.link>
@@ -608,21 +608,21 @@ defmodule ChatelWeb.CoreComponents do
     <li class="p-3 sm:py-4">
       <.user_chat_button
         class="flex items-center space-x-4 p-2 -mx-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-150 ease-in-out cursor-pointer"
-        username={@chat.chat_name}
+        conversation_id={@chat.id}
       >
         <div class="flex-1 min-w-0">
           <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
             {@chat.display_name}
           </p>
           <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-            <%= if @chat.last_message do %>
+            <%= if @chat.last_message.text do %>
               {@chat.last_message.text}
             <% end %>
           </p>
         </div>
         <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
           <span class="text-xs text-gray-500 dark:text-gray-400">
-            <%= if @chat.last_message do %>
+            <%= if @chat.last_message.inserted_at do %>
               {format_time(@chat.last_message.inserted_at)}
             <% end %>
           </span>

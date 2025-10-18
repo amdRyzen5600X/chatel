@@ -31,7 +31,8 @@ defmodule Chatel.Application do
       # {Chatel.Worker, arg},
       # Start to serve requests, typically the last entry
       ChatelWeb.Endpoint,
-      ChatelWeb.Presence
+      ChatelWeb.Presence,
+      Chatel.Vault
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -1,10 +1,6 @@
 # Chatel
 
 To start this project:
-  * install phoenix:
-    ```console
-    curl https://new.phoenixframework.org/myapp | sh
-    ```
   * clone this repo:
     ```console
     git clone https://github.com/amdryzen5600x/chatel.git

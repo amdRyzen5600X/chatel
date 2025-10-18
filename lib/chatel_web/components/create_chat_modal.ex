@@ -46,14 +46,12 @@ defmodule ChatelWeb.CreateChatModal do
               </div>
 
               <:actions>
-                <CoreComponents.button
-                  type="button"
-                  phx-click="close_modal"
+                <Phoenix.Component.link
+                  navigate="/"
                   class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200"
-                  phx-target={@myself}
                 >
                   Cancel
-                </CoreComponents.button>
+                </Phoenix.Component.link>
                 <CoreComponents.button
                   phx-disable-with="Saving..."
                   class="bg-indigo-500 hover:bg-indigo-700 text-white"
@@ -70,27 +68,19 @@ defmodule ChatelWeb.CreateChatModal do
     """
   end
 
-  def handle_event("create-chat", _params, socket) do
-    {:noreply, assign(socket, :show_modal, true)}
-  end
-
-  def handle_event("close_modal", _params, socket) do
-    {:noreply, assign(socket, :show_modal, false)}
-  end
-
   def handle_event("save_chat", %{"chat" => %{"user_ids" => user_ids}, "name" => name}, socket) do
     user_ids = Enum.map(user_ids, &String.to_integer/1)
     all_users_for_chat = [socket.assigns.current_user.id | user_ids] |> Enum.uniq()
 
-    case Chatel.Chat.create_group_chat(
-           name,
+    case Chatel.Chat.create_conversation(
+           "group",
            name,
            all_users_for_chat,
            socket.assigns.current_user.id
          ) do
       {:ok, _group_chat} ->
         send(socket.assigns.parent, :chat_created)
-        {:noreply, assign(socket, :show_modal, false)}
+        {:noreply, socket}
 
       {:error, changeset} ->
         {:noreply, assign(socket, chat_form: to_form(changeset))}
@@ -100,10 +90,15 @@ defmodule ChatelWeb.CreateChatModal do
   def handle_event("save_chat", %{"chat" => %{"name" => name}}, socket) do
     current_user_id = socket.assigns.current_user.id
 
-    case Chatel.Chat.create_group_chat(name, name, [current_user_id], current_user_id) do
+    case Chatel.Chat.create_conversation(
+      "group",
+      name,
+      [current_user_id],
+      current_user_id
+    ) do
       {:ok, _group_chat} ->
         send(socket.assigns.parent, :chat_created)
-        {:noreply, assign(socket, :show_modal, false)}
+        {:noreply, socket}
 
       {:error, changeset} ->
         {:noreply, assign(socket, chat_form: to_form(changeset))}

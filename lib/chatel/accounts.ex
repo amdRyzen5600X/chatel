@@ -13,11 +13,6 @@ defmodule Chatel.Accounts do
     Repo.all(User)
   end
 
-  def list_users_by_ids(ids) do
-    Repo.all(User)
-    |> Enum.filter(fn user -> user.id in ids end)
-  end
-
   @doc """
   Gets a user by email.
 
@@ -413,5 +408,15 @@ defmodule Chatel.Accounts do
       {:ok, %{user: user}} -> {:ok, user}
       {:error, :user, changeset, _} -> {:error, changeset}
     end
+  end
+
+  def search_users_by_username(query, current_user, limit \\ 10) do
+    search_query = "%#{query}"
+
+    from(u in User,
+      where: u.id != ^current_user.id and ilike(u.username, ^search_query),
+      limit: ^limit
+    )
+    |> Repo.all()
   end
 end

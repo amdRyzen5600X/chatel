@@ -72,8 +72,9 @@ defmodule ChatelWeb.Router do
     live_session :require_authenticated_user,
       on_mount: [{ChatelWeb.UserAuth, :ensure_authenticated}] do
       live "/", PageRootLive, :index
-      live "/:username", UserChatLive, :show
-      live "/chat/:chatname", GroupChatLive, :show
+      live "/new", PageRootLive, :new
+      live "/search", PageRootLive, :search
+      live "/:conversation_id", UserChatLive, :show
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
       live "/users/settings/confirm_username/:token", UserChangeUsernameLive, :confirm_username
